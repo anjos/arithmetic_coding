@@ -1,0 +1,54 @@
+@c Hello emacs, this is -*- texinfo -*-
+@c $Id$
+@c André Rabello <Andre.Rabello@ufrj.br>
+
+@node Considerações, , Instalação, Top
+@chapter Considerações Finais
+
+Embora de simples análise, a codificação aritmética possui inúmeros
+detalhes de implementação que não foram completamente cobertos por este
+manual. A grande parte destes detalhes está escondida do usuário menos
+curioso, já que está implementada dentro dos arquivos-fonte da
+biblioteca, através de funções privativas ao módulo. Aconselha-se a
+leitura cuidadosa dos módulos aos que necessitarem maior aprofundamento
+nos detalhes operacionais da biblioteca.
+
+O código desta biblioteca foi escrito com grande preocupação na
+documentação e manutenção, tentando sempre que possível aliá-las a um
+código eficiente. Todas as funções, mesma aquelas internas a um
+determinado módulo, estão documentadas e conformam estritamente ao
+padrão ANSI C, para portabilidade. 
+
+É claro que neste processo, algumas rotinas findam por não expressarem
+a melhor solução em termos computacionais. Uma possível forma de
+otimizar ainda mais o sistema seria buscar o @dfn{perfil} de execução
+dos programas de teste usando um traçador de perfis (@inforef{top,
+,gprof}). Desta forma, o programador poderá mirar seus esforços na
+otimização das rotinas que mais @dfn{pesem} no processamento.
+
+Os programas de teste poderão transmitir ao usuário uma idéia do tempo
+de (de)codificação por símbolo. Ao executar estes programas usando uma
+versão reduzida do @dfn{Brown Corpus} e símbolos gerados pelo script
+@code{MatLab} apresentado, chegou-se a um tempo de codificação por
+símbolo de aproximadamente 190 us. O dicionário em questão continha 70
+diferentes símbolos, enquanto que a mensagem a ser codificada continha
+50.000 entradas. A biblioteca e o programa de teste foram compilados com
+o compilar @code{gcc} (@inforef{top, ,gcc}), com otimização de código,
+sendo executadas em uma máquina com um processador AMD K6III@@450MHz.
+
+A decodificação da mensagem gerada no processo anterior, usando o mesmo
+dicionário, levou, em média por símbolo, apenas 27 us. A diferença nos
+tempo de codificação e decodificação por símbolo se deve a diferente
+complexidade dos processos de codificação e decodificação, já que
+durante a codificação há manipulação intensiva de limites (representados
+na biblioteca por duas variáveis de precisão arbitrária) enquanto que na
+decodificação, manipula-se, equivalentemente, apenas uma variável de
+precisão arbitrária (@code{marca}). Por outro lado, durante a
+codificação, o processo de escrita na fila (dados codificados) implica
+na automática re-alocação de espaço a cada grupo de bits, ao passo que
+na decodificação isto não ocorre.
+
+Estas diferenças na estratégia de processamento introduziram um
+@dfn{overhead} bastante intenso no processo de codificação. Aconselha-se
+que esforços para o melhoramento sejam primariamente direcionados para
+esta fase do processamento.

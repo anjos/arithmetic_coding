@@ -1,0 +1,235 @@
+@c Hello emacs, this is -*- texinfo -*-
+@c $Id$
+@c André Rabello <Andre.Rabello@ufrj.br>
+
+@node Implementação, Instalação, Análise, Top
+@chapter A Implementação Biblioteca
+
+Para implementar a biblioteca de codificação aritmética com precisão
+arbitrária, utilizou-se a linguagem de programação C. Esta linguagem
+permite que as definições das funções disponíveis (cabeçalho) seja
+separada da implementação (código). Esta estratégia foi adotada
+aqui. Cada tipo descrito possui seu próprio arquivo-cabeçalho.
+
+Para utilizar os recursos de cada tipo ou o (de)codificador aritmético,
+o usuário deverá incluir em seu arquivo-fonte (programa principal) o
+arquivo-cabeçalho necessário para aquele tipo. Na leitura deste
+capítulo, recomenda-se ao usuário que cheque em paralelo os
+arquivos-cabeçalho originais da biblioteca, já que aqui resumiu-se os
+cometários lá descritos, sublimando-se algumas definições.
+
+@menu
+* cdf.h::                       O tipo dicionário
+* bound.h::                     Limites, o estado do (de)codificador
+* fifo.h::                      Filas
+* arith.h::                     Rotinas de (de)codificação
+@end menu
+
+@node cdf.h, bound.h, Implementação, Implementação
+@section @code{cdf.h}
+
+Este cabeçalho contém a definição do tipo @code{cdf_t}, que representa o
+dicionário de símbolos nesta implementação. O arquivo está assim
+organizado:
+
+@table @code
+@item tipos
+Contém a definição do tipo @code{cdf_t} (dicionário) e de variáveis do
+tipo símbolo (@code{symbol_t}).
+
+@item init_cdf()
+Esta função inicializa um novo alfabeto, com tamanho dado por
+@code{size} e com os símbolos descritos em @code{alphabet}. A contagem
+inicial de símbolos é dada em @code{init_count}, que é do tipo
+@code{char**} (um vetor de tamanho @code{size} com as contagens de cada
+símbolo do alfabeto dado em @code{alphabet}). Deve-se inicializar a
+variável pertinente em seu programa e passá-la por referencia aqui;
+
+@item free_cdf()
+Destrói uma variável do tipo @code{cdf_t}, sem deixar vazamentos em
+memória;
+
+@item cdf_replace_count()
+Dado um dicionário, é possível reajustar as probabilidades de um
+símbolo @code{x}, indicando qual símbolo deseja-se ajustar e o novo
+valor de contagem;
+
+@item cdf_update_count()
+Se quiser mudar (adicionar) um valor a contagem de um símbolo, use esta
+função. Neste caso, todos os símbolos seguintes (menos prováveis) serão
+atualizados;
+
+@item cdf_bounds()
+Dado um símbolo @code{x} e uma contagem @code{c}, é possível descobrir
+os limites inferiores e superiores da contagem. Estes limites são usados
+no algoritmo de codificação e decodificação aritmética, e retornados no
+parametro @code{b}, que deve ser previamente inicializado com
+@code{init_bound()};
+
+@item cdf_total_count()
+Esta função retorna o valor da contagem total dos símbolos. Este valor é
+igual ao limite superior do último símbolo;
+
+@item cdf_bound_length()
+Calcula o tamanho mínimo, em bits para os limites, que satisfaz o
+critério de número mínimo de bits para a representação do símbolo de
+menor contagem;
+
+@item cdf_min_ulimit()
+Ajusta o limite superior dado para que seja o máximo valor dado o
+tamanho, em bits, deste tipo de operando (o que pode ser obtido com
+(@code{cdf_bound_length()});
+
+@item cdf_find_tag()
+Encontra o símbolo dado uma @code{marca} qualquer, usando os limites
+atuais;
+
+@item cdf_print()
+Imprime o dicionário na stream padrão @code{fp};
+
+@item cdf_print_order()
+Imprime a ordem do dicionário (segundo as contagens) na stream padrão
+@code{fp};
+
+@item cdf_save()
+Esta função salva o dicionário em um arquivo, cujo o nome é dado como
+parâmetro. Ela chama @code{cdf_print()} depois de ter aberto o arquivo
+para escrita;
+
+@item cdf_load()
+Esta função carrega o dicionário de um arquivo, cujo o nome é dado como
+parâmetro. A sintaxe é bastante simples, cada linha deve conter um
+símbolo (de 1 inteiro) que não seja @code{0}, seguido de espaco, e um
+inteiro (positivo) de tamanho arbitrario, indicando a freqüência para
+aquele símbolo. A rotina automaticamente deverá ler e construir o
+dicionário deste arquivo. Ao prefixar uma linha ou o final de uma linha
+com o caracter `#', a linha ou o que resta dela é ignorada, de tal forma
+que este caracter seja usado como início de cometário. Veja os exemplos
+em @file{<root>/example/};
+
+@item cdf_terminator()
+Esta função retorna o símbolo de terminação de mensagens. Este símbolo é
+automaticamente criado na inicialização do dicionário.
+@end table
+
+@node bound.h, fifo.h, cdf.h, Implementação
+@section @code{bound.h}
+
+Este cabeçalho contém a definição do que é um limite e das operações
+sobre limites. O tipo limite é chamado no programa de @code{bound_t}.
+
+@table @code
+@item tipos
+Contém a definição do tipo @code{bound_t} (limites);
+
+@item init_bound()
+@itemx set_bound()
+@itemx free_bound()
+Criação, destruição e ajuste de limites;
+
+@item adjust_bound()
+Ajusta os limites aplicando a fórmula descrita à página 98 de
+@cite{Introduction to Data Compresion, Khalid Sayood}. O parâmetro
+@code{init} contém o endereço dos limites a serem ajustados. O parâmetro
+@code{limit} contém os limites atuais para o símbolo sendo analisado e
+@code{total}, a contagem total do dicionário de símbolos;
+
+@item bound_msb_match()
+Esta função determina se os MSB de cada limite são iguais, retornando 1
+caso sejam e 0 caso contrário;
+
+@item bound_E3_holds()
+Esta função determina se o segundo MSB do limite inferior é 1 e o do
+limite superior é zero (condição E3). O enfoque aqui é parecido com o da
+função @code{bound_msb_match()};
+
+@item bound_next_msb()
+Retorna o valor do MSB (em um @code{bit_t}), e aplica um deslocamento a
+cada um dos limites (inferior e superior), colocando um 1 no LSB do
+limite superior e 0 no LSB do limite inferior. Esta função deve ser
+usada após a checagem provida por @code{bound_msb_match(...)};
+
+@item bound_apply_E3()
+Aplica um mapeamento E3 nos limites dados. Esta função somente deve ser
+utilizada depois de uma chamada a @code{bound_E3_holds()} e
+@code{bound_msb_match()} (para fazer um deslocamento à esquerda nos
+limites), já que não faz as mesmas verificações por questões de
+eficiência.
+@end table
+
+@node fifo.h, arith.h, bound.h, Implementação
+@section @code{fifo.h}
+
+Este cabeçalho contém a definição de uma fifo (chamada no programa de
+@code{fifo_t}). 
+
+@table @code
+@item tipos
+Define os tipos usados por uma fifo, incluindo o tipo @code{fifo_t} e o
+tipo @code{bit_t}, que define o que é um bit na biblioteca;
+
+@item init_fifo()
+@itemx free_fifo();
+Criação e destruição (sem vazamento de memória) de tipos @code{fifo_t};
+
+@item fifo_write()
+@itemx fifo_write_str()
+Escrevem um ou mais bits na fifo dada pelo primeiro parâmetro;
+
+@item fifo_read()
+@itemx fifo_nread()
+Lêem um ou mais bits da fifo;
+
+@item fifo_shift_in()
+Faz um deslocamento à esquerda na @code{marca} dada, usando o próximo
+bit da fifo;
+
+@item fifo_print()
+Imprime o conteúdo da fifo na stream padrão dada como parâmetro;
+
+@item fifo_load()
+Carrega na fifo, os dados da stream padrão dada como parâmetro;
+@end table
+
+@node arith.h,  , fifo.h, Implementação
+@section @code{arith.h}
+
+Este cabeçalho contém a descrição dos procedimentos de codificação e
+decodificação aritmética. É o cabeçalho mais simples de todos, pois
+somente contém duas funções e nenhuma descrição de tipos.
+
+Para chamar o codificador aritmético, é necessário que o usuário
+inicialize uma fila (em @code{fifo.h}) e um dicionário contendo as
+probabilidades acumuladas do alfabeto que se deseja codificar (em
+@code{cdf.h}). O dicionário e a fila são passados para o codificador,
+que então poderá realizar o processo a que se destina. O estado atual é
+dado pelo parâmetro @code{bound_t}. O símbolo que se deseja codificar é
+dado por último, formando o conjunto dos quatro parâmetros necessários a
+decodificação como descrito anteriormente.
+
+Os limites (@code{bound_t}) devem ser inicializados pelo usuário
+utilizando @code{init_bound()} e @code{cdf_min_ulimit()}, que
+inicializam as variáveis internas ao tipo apropriadamente para a
+codficação.
+
+O decodificador, a partir dos mesmos parâmetros de entrada do
+codificador, poderá decodificar os dados diretamente da fila, como
+descrito em @cite{Introduction to Data Compression, Khalid Sayood,
+capitulo 4 ("Arithmethic Coding")}. 
+
+Espera-se que um símbolo seja (de)codificado por vez, e portanto é isto
+que será esperado em `cp': apenas um símbolo. Para terminar a mensagem
+na codificação, envie o caracter terminador do dicionário.
+
+@table @code
+@item arith_encode()
+Função de codificação aritmética;
+
+@item arith_decode()
+Função de decodificação aritmética;
+@end table
+
+
+
+
+

@@ -1,0 +1,128 @@
+#!/bin/awk -f
+# $Id$
+# Andre Rabello <Andre.Rabello@ufrj.br>
+
+# Este script gawk le o arquivo central `texinfo', traduzindo todas as
+# sequencias de caracteres acentuados para sua formatacao texinfo. Os
+# caracteres acentuados em menus e nos sao desformatados. Os arquivos
+# inclusos com o comando `@include' sao lidos e concatenados com o
+# arquivo central, formando um arquivo `.texinfo' temporario no
+# diretorio atual (com o nome tendo `.' prefixado). Apos gerar o arquivo,
+# o script ira rodar `texi2dvi -c' sob este arquivo, e copiar o
+# resultado para o nome orginal do arquivo pai `.dvi'. As diretivas de
+# nós (`@node') e de menus (`* ...') sao traduzidas para valores em 
+# acentuacao, para que o TeX possa identifica-los sem problemas.
+
+# Esta funcao elimina caracteres LATIN1 de uma linha
+function nolatin (line) {
+    gsub(/á/,"a",line);
+    gsub(/é/,"e",line);
+    gsub(/í/,"i",line);
+    gsub(/ó/,"o",line);
+    gsub(/ú/,"u",line);
+    gsub(/â/,"a",line);
+    gsub(/ê/,"e",line);
+    gsub(/ô/,"o",line);
+    gsub(/ã/,"a",line);
+    gsub(/õ/,"o",line);
+    gsub(/à/,"a",line);
+    gsub(/ü/,"u",line);
+    gsub(/ç/,"c",line);
+    gsub(/Á/,"A",line);
+    gsub(/É/,"E",line);
+    gsub(/Í/,"I",line);
+    gsub(/Ó/,"O",line);
+    gsub(/Ú/,"U",line);
+    gsub(/Â/,"A",line);
+    gsub(/Ê/,"E",line);
+    gsub(/Ô/,"O",line);
+    gsub(/Ã/,"A",line);
+    gsub(/Õ/,"O",line);
+    gsub(/À/,"A",line);
+    gsub(/Ü/,"U",line);
+    gsub(/Ç/,"C",line);
+    return line;
+}
+
+# Esta funcao substitui os caracteres acentuados por padroes validos
+# em TeXinfo
+function texilatin (line) {
+    gsub(/á/,"@'a",line);
+    gsub(/é/,"@'e",line);
+    gsub(/í/,"@'{@dotless{i}}",line);
+    gsub(/ó/,"@'o",line);
+    gsub(/ú/,"@'u",line);
+    gsub(/â/,"@^a",line);
+    gsub(/ê/,"@^e",line);
+    gsub(/ô/,"@^o",line);
+    gsub(/ã/,"@~a",line);
+    gsub(/õ/,"@~o",line);
+    gsub(/à/,"@`a",line);
+    gsub(/ü/,"@\"u",line);
+    gsub(/ç/,"@,{c}",line);
+    gsub(/Á/,"@'A",line);
+    gsub(/É/,"@'E",line);
+    gsub(/Í/,"@'I",line);
+    gsub(/Ó/,"@'O",line);
+    gsub(/Ú/,"@'U",line);
+    gsub(/Â/,"@^A",line);
+    gsub(/Ê/,"@^E",line);
+    gsub(/Ô/,"@^O",line);
+    gsub(/Ã/,"@~A",line);
+    gsub(/Õ/,"@~O",line);
+    gsub(/À/,"@`A",line);
+    gsub(/Ü/,"@\"U",line);
+    gsub(/Ç/,"@,{C}",line); 
+    return line;
+}
+
+BEGIN {
+    if (ARGC < 2 || ARGC > 3) {
+	print "uso: xtexi2dvi <arquivo.texinfo> [tmpfile]";
+	exit 0;
+    }
+
+    if (ARGC == 2) {
+        # cria o arquivo temporario (se nao existir!)
+        tmpfile=sprintf("tmp-%s",ARGV[1]);
+        system(sprintf("rm -f %s",tmpfile));
+        system(sprintf("touch %s",tmpfile)); 
+        print "[xtexi2dvi] M", ARGV[1], "==>", tmpfile;
+    }
+
+    if (ARGC == 3) {
+        tmpfile=ARGV[2];
+        ARGV[2]=""; # nao leia este ultimo arquivo!
+        print "[xtexi2dvi] +", ARGV[1];
+    }
+
+}
+
+/^[[:blank:]]*@node.*/ { #regra para nós
+    print nolatin($0) >> tmpfile;
+}
+
+/^[[:blank:]]*\*[[:blank:]]?.*/ { #regra para menus
+    print nolatin($0) >> tmpfile;
+}
+
+/^[[:blank:]]*@include.*/ { #regra para inclusao de arquivos
+    # o arquivo esta em $2... faca uma chamada recursiva!
+    system(sprintf("%s %s %s","./xtexi2dvi",$2,tmpfile));
+}
+
+$0 !~ "^[[:blank:]]*(@(node|include)|\*[[:blank:]]?.*)" {
+    print texilatin($0) >> tmpfile;
+} 
+
+END {
+    # roda texi2dvi em cima de tmpfile, se este e o arquivo mestre 
+    if (ARGC == 2) {
+        system(sprintf("texi2dvi -c %s",tmpfile));
+        system(sprintf("rm -f %s",tmpfile));
+        outname=ARGV[1];
+        gsub(/\.texi[[:alnum:]]*$/,".dvi",outname);
+        gsub(/\.texi[[:alnum:]]*$/,".dvi",tmpfile);
+        system(sprintf("mv %s %s",tmpfile,outname));
+    }
+}

@@ -1,0 +1,10 @@
+# dicionario equivalente ao exemplo 4.4.4
+# na pagina 199 do livro "Introduction to
+# Data Compression", Khalid Sayood
+# $Id$
+# andre.rabello@ufrj.br
+
+# alfabeto
+1 40
+2 1
+3 9

@@ -1,0 +1,236 @@
+@c Hello emacs, this is -*- texinfo -*-
+@c $Id$
+@c André Rabello <Andre.Rabello@ufrj.br>
+
+@node Introdução, Análise, Top, Top
+@chapter Introdução
+
+@ifnottex 
+
+Esta seção faz uma introdução ao método de codificação aritmética. Este
+método surgiu para suprir uma lacuna existente na tecnologia de
+compressão de dados, já que a codificação usando código de Huffman é
+deficitária em muitos aspectos.
+
+Esta introdução está longe de ser completa, servindo apenas para colocar
+os conceitos mais básicos do processo de codificação e introduzir os
+termos utilizados.
+
+@end ifnottex
+
+@menu
+* Huffman::                     Desvantagens deste tipo de codificação
+* Aritmético::                  Suprindo as deficiências de Huffman
+@end menu
+
+@node Huffman, Aritmético, Introdução, Introdução
+@section @dfn{Código de Huffman}
+
+A técnica de codificação por Huffman foi desenvolvida por David Huffman
+como parte de um trabalho para uma de suas cadeiras de doutoramento. O
+código desenvolvido é prefixado, sendo ótimo para determinados modelos
+estatísticos. Ele é baseado em duas observações tangentes a códigos
+prefixados ótimos: inicialmente, símbolos mais prováveis devem ter
+menores códigos; além deste fato, no código ótimo, os dois símbolos
+menos freqüentes devem ter o mesmo tamanho de código.
+
+Estas duas observações, apesar de triviais, representam uma importância
+fundamental na criação dos códigos. A partir destas observações, a
+codificação usando código de Huffman é feita de forma bastante simples:
+
+@enumerate
+@item Organize os símbolos por probabilidade de ocorrência, com os
+símbolos mais prováveis em primeiro;
+@item Tome os dois símbolos menos prováveis, some suas probabilidades e
+indique a cada um o dígito @code{0} ou @code{1}, prefixando-o ao código
+atual do conjunto;
+@item Some as probabilidades dos símbolos tomados no passo anterior,
+definindo um novo símbolo (temporário);
+@item Prossiga do passo 1.
+@end enumerate
+
+@anchor{Probabilidades}
+@multitable @columnfractions .32 .15 .2 .32
+@item @tab @strong{Símbolo} @tab @strong{Probabilidade} @tab
+@item @tab a@subs{2} @tab 0.4 @tab
+@item @tab a@subs{1} @tab 0.2 @tab
+@item @tab a@subs{3} @tab 0.2 @tab
+@item @tab a@subs{4} @tab 0.1 @tab
+@item @tab a@subs{5} @tab 0.1 @tab
+@end multitable
+
+Como exemplo tome a lista de símbolos descrita acima
+(@xref{Probabilidades}.). Esta tabela mostra os símbolos numerados
+a@subs{1}até a@subs{5}, já organizados por probabilidade como
+especifica o passo 1. Não é difícil deduzir que o código para estes
+símbolos serão gerados na seguinte ordem:
+
+@enumerate
+@item junta-se os símbolos 4 e 5, formando o novo (pseudo) símbolo 4';
+@item junta-se os símbolos 3 e 4', formando o novo (pseudo) símbolo 3';
+@item junta-se os símbolos 3' e 2, formando o novo (pseudo) símbolo 2';
+@item junta-se os símbolos 2' e 1;
+@end enumerate
+
+Neste processo, os códigos atribuídos a cada símbolo estão descritos
+abaixo (@xref{Codigos}.). Estes códigos são o resultado da prefixação
+de @code{0} para o símbolo inferior e @code{1} para o símbolo superior a
+cada tomada dos dois símbolos menos prováveis, até que haja somente dois
+símbolos no dicionário.
+
+@anchor{Codigos}
+@multitable @columnfractions .32 .15 .2 .32
+@item @tab @strong{Símbolo} @tab @strong{Código} @tab
+@item @tab a@subs{2} @tab 1 @tab
+@item @tab a@subs{1} @tab 01 @tab
+@item @tab a@subs{3} @tab 000 @tab
+@item @tab a@subs{4} @tab 0010 @tab
+@item @tab a@subs{5} @tab 0011 @tab
+@end multitable
+
+Outras técnicas existem para a distribuição de @code{0}'s e @code{1}'s
+pelos símbolos e podem ser utilizadas, devendo ser acordadas previamente
+entre o codificador e decodificador. Em qualquer das formas, o
+comprimento médio do código gerado pela técnica, para este dicionário,
+está descrita por:
+
+@tex
+$$ H(s) = E[tamanho_i] = 2,2  bits/simb $$
+@end tex
+@ifnottex
+@math{H(s) = E[tamanho_i] = 2,2 bits/símbolo}
+@end ifnottex
+
+Embora haja formas de derivação de código mais eficientes no tangente a
+variância no tamanho dos símbolos, estas não serão discutidas aqui. Como
+é possível ver na equação descrita anteriormente, o tamanho médio do
+código por símbolo se aproxima da entropia do sistema (1,47
+bits/símbolo), ainda que esteja aquém das expectativas de um sistema de
+codificação razoável.
+
+Para que o sistema convirja exatamente para o valor da entropia, não é
+difícil perceber que o inverso do tamanho de cada símbolo tenha que ser
+igual a sua probabilidade p@subs{i}. Uma vez que os códigos de cada
+símbolo são compostos de apenas de @code{0}'s e @code{1}'s, fica
+determinado que a codificação por Huffman somente será ótima se as
+probabilidades de cada símbolo forem um múltiplo de 2@sups{-1}. Fora
+deste caso particular, a codificação por Huffman apenas se aproxima a
+entropia. Se o símbolo mais provável possuir probabilidade (p@subs{max})
+maior que 0,5, então é possível deduzir que a codificação gerará um
+tamanho médio de código menor que a entropia mais p@subs{max}. Caso
+contrário há um adicional de 0,086 no valor anterior@footnote{A prova
+destes valores pode ser consultada na referência 80 do livro
+@emph{Introduction to Data Compression, Khalid Sayood}.}.
+
+É possível melhorar este quadro usando um alfabeto de símbolos
+estendido, concatenando-se um número @code{n} de símbolos do alfabeto
+inicial. Este procedimento poderá aproximar o limite superior para
+valores tão próximos a entropia quanto se deseje @math{(entropia +
+1/n)}, ainda que maior complexidade na codificação (e decodificação)
+seja necessária. Por exemplo, um alfabeto com apenas 3 símbolos poderá
+ser estendido para um de 9, concatenando-se os símbolos dois a
+dois. Através deste simples exemplo, é possível detetar uma das
+dificuldades de implementação do código de Huffman: é possível que seja
+necessário um valor de @code{n} bastante grande para que o tamanho médio
+do código se aproxime da entropia tanto quanto necessário a uma
+aplicação. Quanto maior o alfabeto, mais complexo se torna o trabalho de
+codificação e, por conseqüência, o de decodificação. Isto acontece pois
+o número de códigos que devem ser armazenados cresce exponecialmente com
+a aproximação da entropia.
+
+Por outro lado, pequenas modificações na probabilidade de ocorrência de
+cada símbolo, inerente a processos adaptativos, implicará na
+re-estruturação completa do dicionário de símbolos. Isto é de fato
+bastante oneroso para aplicações em tempo real ou até para aplicações
+domésticas como a compactação de dados em computadores pessoais. 
+
+Há formas de circundar estas dificuldades adicionando mecanismos mais
+complexos aos sistemas de codificação. Entretanto, uma solução muito
+mais elegante foi recentemente proposta: a @dfn{Codificação Aritmética}.
+
+@node Aritmético,  , Huffman, Introdução
+@section O Codificador Aritmético
+
+A codificação aritmética foi criada tendo em vistas as dificuldades da
+codificação por Huffman para grandes alfabetos, já que tangir a entropia
+implica no aumento da complexidade da codificação dos símbolos de um
+dicionário. Na codificação aritmética pode-se destacar o seguinte:
+
+@enumerate
+@item A geração de códigos acontece naturalmente a partir do agrupamento
+de símbolos;
+@item Não é necessário concatenar os símbolos, gerando novos
+dicionários, para gerar códigos mais eficientes no ponto de vista da
+entropia;
+@item A atualização das probabilidades de cada símbolo não implica na
+re-estruturação de todos os códigos;
+@item É possível se aproximar tanto quanto necessário da entropia sem
+aumentar a complexidade de codificação;
+@item Há implementação trivial usando inteiros;
+@end enumerate
+
+Estas características tornam factíveis o total desacoplamento da
+modelagem das probabilidades de cada símbolo da codificação em si. A
+figura seguinte esquematiza este conceito. Nessa figura nota-se que há
+blocos separados representando unidades de codificação e decodificação
+universais e outras indicando modeladores probabilísticos. O codificador
+aritmético foi projetado para atender estas especificações de operação e
+se adapta sem restrições ao esquema.
+
+@image{figures/coder}
+
+@menu
+* Gerando códigos::             no decodificador aritmético
+@end menu
+
+@node Gerando códigos,  , Aritmético, Aritmético
+@subsection Gerando códigos@dots{}
+
+De forma a distingüir uma seqüência de símbolos de outra, é necessário
+@emph{etiquetar} a seqüência de forma única. Uma possível etiquetagem
+está contida na seqüência (infinita) de números reais de 0 a 1. Uma vez
+que a seqüência é infinita, qualquer conjunto de códigos poderá ser
+etiquetado convenientemente neste intervalo. 
+
+Para mapear as probabilidades de cada símbolo do alfabeto considerado em
+um identificador único dentro do intervalo [0,1), é possível utilizar a
+função de probabilidade acumulativa (@strong{cdf}). A @code{cdf} de um
+alfabeto é a soma das probabilidades individuais de cada símbolo. Esta
+função é intrinsicamente monotônica e possui um conjunto de valores
+único para cada símbolo considerado.
+
+Para etiquetar uma seqüência, observa-se o símbolo atual,
+re-dimensionando o intervalo considerado para aquele no qual o símbolo
+atual reside dentro da @code{cdf}. Prossegue-se desta forma, reduzindo o
+intervalo atual até que codifique-se toda a mensagem. Para finalizar a
+codificação, envia-se um número contido no intervalo final. Este número
+representa de forma determinística a seqüência de símbolos recebidas
+pelo codificador. O leitor poderá encontrar um exemplo de codificação à
+página 81 do livro @emph{Introduction to Data Compression, Khalid
+Sayood}.
+
+A decodificação ocorrerá de forma análoga, encontrando-se o intervalo
+no qual dado número está contido. Após decodificado o símbolo, o
+intervalo considerado no decodificador também é re-dimensionado e
+assim se prossegue até que toda a mensagem esteja decodificada. O
+leitor tambem poderá encontrar exemplos de decodificação aritmética no
+livro @emph{Introduction to Data Compression, Khalid Sayood}.
+
+A deteção do final da mensagem pode ocorrer de duas formas:
+
+@enumerate
+@item A mensagem tem tamanho fixo e, portanto, o decodificador atuará
+até que o último símbolo esperado seja decodificado;
+@item A mensagem inclui um símbolo terminador, único. Após decodificar
+este símbolo, o decodificador é re-inicializado.
+@end enumerate
+
+Após finalizar, o codificador (ou decodificador), retorna ao estado
+inicial, para que uma nova seqüência seja (de)codificada.
+
+
+
+
+
+
+

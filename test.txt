@@ -1,0 +1,116 @@
+1. Introducao
+
+Breve introducao, alguns paragrafos indicando o conteudo do
+capitulo de forma sintetica
+
+1.1 Particulas
+
+Explicar o conceito de particulas e introduzir o modelo 
+fundamental. O que nos perguntamos hoje em dia? O que
+ja sabemos.
+
+1.2 Fisica de Altas Energias
+
+O campo que estuda as particulas e tenta responder as
+perguntas anteriores. Exemplos de experimentos e tecnicas
+de detecao.
+
+1.2.1 Calorimetria
+
+Calorimetria moderna, o que eh, o que investiga. O que se
+pode detetar com calorimetria. Algoritmos modernos. Exemplos
+de decaimentos de particulas em calorimetros. Problemas?
+
+1.2.2 Sistemas de Filtragem
+
+Introducao a tecnicas modernas de filtragem de eventos, enfoque
+principal em "Segundo Nivel" (baseado em hardware versus software).
+Explicitar a dificuldade de implementacao de um segundo nivel, ja
+que tera que transportar todos os dados do evento para um processador?
+Como eh feito? (A novidade da RoI eh guardada para o proximo capitulo)
+
+2. Experimento ATLAS no CERN
+
+Detalhes sobre o CERN e seus avancos, algumas paginas na internet
+tem detalhes de sua historia.
+
+2.1 O Experimento ATLAS
+
+Detalhes do experimento ATLAS, suas metas. A composicao estrutural
+do experimento quanto a sua organizacao em sub-sistemas (detetores,
+sistema de filtragem, processamento offline). Com o conhecimento
+poderei fazer varias subsecoes aqui. Isto dara uma visao geral de
+onde se encaixa o sistema de filtragem no experimento.
+
+3. Filtragem de Eventos no ATLAS
+
+Introducao sobre as tecnicas de filtragem consideradas (arquiteturas
+A, B e C). O sistema de referencia e o projeto piloto, concluindo 
+na escolha da arquitetura B/C para a implementacao final.
+
+3.1 Arquitetura
+
+Explicitar e detalhar a arquitetura do sistema de filtragem, seus 
+objetivos e interfaces. Tenho que explicitar os vizinhos e suas
+contribuicoes para o funcionamento do sistema. Os componentes do
+sistema de filtragem sao detalhados -> LVL1, Dataflow, HLT, Online
+software, Buffers de Leitura, conexao com os detetores. Quem eh 
+cliente de quem.
+
+3.2 Os "Triggers" de Alto Nivel (HLT)
+
+A evolucao do HLT de um sistema misto (LVL2/EF) para um sistema 
+mais homogeneo. Detalhamento dos aplicativos, projeto e sua
+contribuicao no sistema. Limites de funcionamento, tecnicas de
+programacao, paralelismo (varios artigos foram publicados no 
+assunto), com dados.
+
+Pode-se falar por horas aqui, testes de escalabilidade, e robustez
+foram executados.
+
+3.3 O Segundo Nivel de Filtragem
+
+O projeto do segundo nivel, problemas e solucoes.
+
+4. Filtragem baseada em Calorimetria
+
+Introducao das possibilidades de usar a calorimetria para a 
+detecao de eletrons, jatos e outras particulas. O problema
+com pions (pi-0) pode ser mencionado aqui de novo.
+
+4.1. Calorimetria no ATLAS
+
+Introducao ao calorimetro do ATLAS, limitacoes e capacidades.
+Geometria.
+
+4.1 Tecnicas modernas
+
+A calorimetria como eh utilizada no LVL2 e EF. Consultar
+a Pilar para encontrar o projeto destes algoritmos e 
+entender a massa de dados que se usa para validar os
+processos. 
+
+4.1.2 Implementacao no HLT
+
+Introducao ao ambiente PESA, Gaudi, offline.
+
+4.1.1 Resultados
+
+Estes resultados tem que ser produzidos com os dados indicados
+pela Pilar.
+
+4.2 Tecnicas novas 
+
+Discutir com o Seixas.
+
+Neurais, PCA, ICA, Aneis. Solucoes para o problema de geometria.
+
+5. Conclusoes
+
+Um sumario geral de todos os capitulos.
+
+Conclusoes do estudo.
+
+Apendice A. Publicacoes
+
+

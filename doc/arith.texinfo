@@ -1,0 +1,121 @@
+\input texinfo   @c -*-texinfo-*-
+@c %**start of header
+@setfilename arith.info
+@settitle Biblioteca de (De)Codificação Aritmética
+@documentlanguage pt
+@documentencoding ISO-8859-1
+@afourpaper
+@c %**end of header
+
+@c $Id$
+@c André Rabello <Andre.Rabello@ufrj.br>
+
+@c printted output
+@c ---------------
+@titlepage
+@title @code{arith}
+@subtitle Biblioteca de (De)Codificação Aritmética
+@subtitle versão 1
+@author André Rabello @code{<}@email{Andre.Rabello@@mail.com}@code{>}
+@end titlepage
+
+@headings single
+
+@c formata exp em subescrito no TeX, mas deixa sem formatação para o
+@c Info e para html.
+@macro subs{exp}
+@tex
+$_{\exp\}$
+@end tex
+@ifnottex
+_\exp\
+@end ifnottex
+@w{ }
+@end macro
+
+@c formata exp em sobrescrito no TeX, mas deixa sem formatação para o
+@c Info e para html.
+@macro sups{exp}
+@tex
+$^{\exp\}$
+@end tex
+@ifnottex
+^\exp\
+@end ifnottex
+@w{ }
+@end macro
+
+@c on-line output
+@c --------------
+@ifnottex
+@node Top, Introdução, (dir), (dir)
+@top arith
+
+@code{arith} é uma biblioteca de codificação e decodificação de dados
+usando técnicas de codificação aritmética. Esta biblioteca é
+implementada para precisão arbitrária, usando as facilidades da
+biblioteca @code{gmp} (@inforef{Integer Functions, Biblioteca de
+Precisão Arbitrária GNU, gmp}).
+
+Este manual corresponde a versão 1 desta biblioteca. As técnicas de
+codificação aritmética (e respectiva implementação com inteiros) está
+bem descrita em: @cite{Introduction to Data Compression de Khalid Sayood,
+2a. edição} e @cite{Text Compression de Bell, Clearyxx e Witten}.
+@end ifnottex
+
+@menu
+* Introdução::                  À codificação aritmética
+* Análise::                     O problema da codificação
+* Implementação::               Da análise ao código
+* Instalação::                  Instalando e usando @code{libarith.a}
+* Considerações::               Discutindo aspectos finais
+
+
+
+
+
+
+@detailmenu
+ --- The Detailed Node Listing ---
+
+Introdução
+
+* Huffman::                     Desvantagens deste tipo de codificação
+* Aritmético::                  Suprindo as deficiências de Huffman
+
+O Codificador Aritmético
+
+* Gerando códigos::             no decodificador aritmético
+
+Análise Computacional
+
+* Precisão Arbitrária::         Como usar precisão arbitrária
+* Codificador::                 Descrição do processo de codificação
+* Decodificador::               Descrição do processo de decodificação
+* Dicionário::                  Guardando símbolos de forma eficiente
+* Limites::                     O estado do codificador
+* Fifo::                        Onde fica o código
+
+A Implementação Biblioteca
+
+* cdf.h::                       O tipo dicionário
+* bound.h::                     Limites, o estado do (de)codificador
+* fifo.h::                      Filas
+* arith.h::                     Rotinas de (de)codificação
+
+Instalação e Utilização da Biblioteca
+
+* Instalando::                  Como instalar a biblioteca @code{arith}
+* Exemplos::                    Aplicações de análise
+
+@end detailmenu
+@end menu
+
+@include intro.texinfo
+@include analise.texinfo
+@include implementacao.texinfo
+@include instalacao.texinfo
+@include conclusao.texinfo
+
+@contents
+@bye

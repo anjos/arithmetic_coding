@@ -1,0 +1,278 @@
+This is TeXk, Version 3.14159 (Web2C 7.4.5) (format=tex 2003.9.11)  6 FEB 2004 22:24
+ file:line:error style messages enabled.
+**/home/andre/doc/old/cnpq/arith/doc/tmp-arith.texinfo
+(/home/andre/doc/old/cnpq/arith/doc/tmp-arith.texinfo
+(/usr/share/texmf/tex/texinfo/texinfo.tex
+Loading texinfo [version 2003-02-03.16]: Basics,
+\bindingoffset=\dimen16
+\normaloffset=\dimen17
+\pagewidth=\dimen18
+\pageheight=\dimen19
+\outerhsize=\dimen20
+\outervsize=\dimen21
+\cornerlong=\dimen22
+\cornerthick=\dimen23
+\topandbottommargin=\dimen24
+\headlinebox=\box16
+\footlinebox=\box17
+\margin=\insert252
+\EMsimple=\toks12
+\groupbox=\box18
+\groupinvalidhelp=\toks13
+\mil=\dimen25
+\exdentamount=\skip18
+\inmarginspacing=\skip19
+ pdf,
+\tempnum=\count26
+\lnkcount=\count27
+\filename=\toks14
+\filenamelength=\count28
+\pgn=\count29
+\toksA=\toks15
+\toksB=\toks16
+\toksC=\toks17
+\toksD=\toks18
+\boxA=\box19
+\countA=\count30
+ fonts,
+\sffam=\fam8
+\textleading=\dimen26
+\mainmagstep=\count31
+\fontdepth=\count32
+ page headings,
+\titlepagetopglue=\skip20
+\titlepagebottomglue=\skip21
+\evenheadline=\toks19
+\oddheadline=\toks20
+\evenfootline=\toks21
+\oddfootline=\toks22
+
+tables,
+\tableindent=\dimen27
+\itemindent=\dimen28
+\itemmargin=\dimen29
+\itemmax=\dimen30
+\itemno=\count33
+\multitableparskip=\skip22
+\multitableparindent=\skip23
+\multitablecolspace=\dimen31
+\multitablelinespace=\skip24
+\colcount=\count34
+\savedfootnotes=\box20
+ conditionals, indexing,
+\secondaryindent=\skip25
+\partialpage=\box21
+\doublecolumnhsize=\dimen32
+ sectioning,
+\chapno=\count35
+\secno=\count36
+\subsecno=\count37
+\subsubsecno=\count38
+\appendixno=\count39
+\absseclevel=\count40
+\secbase=\count41
+\chapheadingskip=\skip26
+\secheadingskip=\skip27
+\subsecheadingskip=\skip28
+ toc,
+\tocfile=\write0
+\contentsrightmargin=\skip29
+\savepageno=\count42
+\lastnegativepageno=\count43
+\shortappendixwidth=\dimen33
+\tocindent=\dimen34
+ environments,
+\errorbox=\box22
+\lispnarrowing=\skip30
+\envskipamount=\skip31
+\circthick=\dimen35
+\cartouter=\dimen36
+\cartinner=\dimen37
+\normbskip=\skip32
+\normpskip=\skip33
+\normlskip=\skip34
+\lskip=\skip35
+\rskip=\skip36
+\tabw=\dimen38
+ defuns,
+\defbodyindent=\skip37
+\defargsindent=\skip38
+\deflastargmargin=\skip39
+\parencount=\count44
+ macros,
+\macscribble=\write1
+\paramno=\count45
+\macname=\toks23
+
+cross references,
+\auxfile=\write2
+\savesfregister=\count46
+\footnoteno=\count47
+ (/usr/share/texmf/tex/generic/misc/epsf.tex
+\epsffilein=\read0
+\epsfframemargin=\dimen39
+\epsfframethickness=\dimen40
+\epsfrsize=\dimen41
+\epsftmp=\dimen42
+\epsftsize=\dimen43
+\epsfxsize=\dimen44
+\epsfysize=\dimen45
+\pspoints=\dimen46
+\epsfnoopenhelp=\toks24
+)
+\noepsfhelp=\toks25
+ localization,
+\nolanghelp=\toks26
+\defaultparindent=\dimen47
+
+and turning on texinfo input format.)
+@cpindfile=@write3
+@fnindfile=@write4
+@vrindfile=@write5
+@tpindfile=@write6
+@kyindfile=@write7
+@pgindfile=@write8
+
+(/home/andre/doc/old/cnpq/arith/doc/txi-pt.tex) [1
+\openout2 = `tmp-arith.aux'.
+
+\openout3 = `tmp-arith.cp'.
+
+\openout4 = `tmp-arith.fn'.
+
+\openout5 = `tmp-arith.vr'.
+
+\openout6 = `tmp-arith.tp'.
+
+\openout7 = `tmp-arith.ky'.
+
+\openout8 = `tmp-arith.pg'.
+
+]
+Cap{@accent 19 @ptexi }tulo 1
+\openout0 = `tmp-arith.toc'.
+
+\openout1 = `tmp-arith.tmp'.
+
+ (./tmp-arith.tmp)
+\openout1 = `tmp-arith.tmp'.
+
+ (./tmp-arith.tmp)
+\openout1 = `tmp-arith.tmp'.
+
+
+(./tmp-arith.tmp)
+\openout1 = `tmp-arith.tmp'.
+
+ (./tmp-arith.tmp)
+\openout1 = `tmp-arith.tmp'.
+
+ (./tmp-arith.tmp)
+Cross reference values unknown; you must run TeX again.
+\openout1 = `tmp-arith.tmp'.
+
+ (./tmp-arith.tmp)
+\openout1 = `tmp-arith.tmp'.
+
+
+(./tmp-arith.tmp)
+\openout1 = `tmp-arith.tmp'.
+
+ (./tmp-arith.tmp)
+\openout1 = `tmp-arith.tmp'.
+
+ (./tmp-arith.tmp)
+\openout1 = `tmp-arith.tmp'.
+
+ (./tmp-arith.tmp)
+\openout1 = `tmp-arith.tmp'.
+
+
+(./tmp-arith.tmp)
+\openout1 = `tmp-arith.tmp'.
+
+ (./tmp-arith.tmp)
+/home/andre/doc/old/cnpq/arith/doc/tmp-arith.texinfo:211: Missing $ inserted
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+/home/andre/doc/old/cnpq/arith/doc/tmp-arith.texinfo:211: Please use \mathaccen
+t for accents in math mode
+I'm changing \accent to \mathaccent here; wish me luck.
+(Accents are not the same in formulas as they are in text.)
+
+/home/andre/doc/old/cnpq/arith/doc/tmp-arith.texinfo:211: Extra }, or forgotten
+ $
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+/home/andre/doc/old/cnpq/arith/doc/tmp-arith.texinfo:211: Extra }, or forgotten
+ $
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+/home/andre/doc/old/cnpq/arith/doc/tmp-arith.texinfo:211: Extra }, or forgotten
+ $
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+/home/andre/doc/old/cnpq/arith/doc/tmp-arith.texinfo:211: Missing $ inserted
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+/home/andre/doc/old/cnpq/arith/doc/tmp-arith.texinfo:211: Missing } inserted
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+/home/andre/doc/old/cnpq/arith/doc/tmp-arith.texinfo:211: Missing } inserted
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+/home/andre/doc/old/cnpq/arith/doc/tmp-arith.texinfo:211: Missing } inserted
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+[1]
+\openout1 = `tmp-arith.tmp'.
+
+ (./tmp-arith.tmp)
+\openout1 = `tmp-arith.tmp'.
+
+ (./tmp-arith.tmp)
+\openout1 = `tmp-arith.tmp'.
+
+ (./tmp-arith.tmp)
+\openout1 = `tmp-arith.tmp'.
+
+ (./tmp-arith.tmp)
+[2] Cap{@accent 19 @ptexi }tulo 2 [3] [4] [5] [6]
+Cap{@accent 19 @ptexi }tulo 3 [7] [8] [9] [10] Cap{@accent 19 @ptexi }tulo 4
+[11] [12] Cap{@accent 19 @ptexi }tulo 5 [13] [14] (./tmp-arith.toc) [-1] ) 
+Here is how much of TeX's memory you used:
+ 1373 strings out of 98002
+ 15165 string characters out of 1221654
+ 39130 words of memory out of 1000001
+ 2215 multiletter control sequences out of 10000+50000
+ 31953 words of font info for 111 fonts, out of 500000 for 1000
+ 19 hyphenation exceptions out of 1000
+ 14i,7n,22p,276b,282s stack positions out of 3000i,1500n,5000p,200000b,15000s
+
+Output written on tmp-arith.dvi (16 pages, 60720 bytes).

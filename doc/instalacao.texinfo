@@ -1,0 +1,112 @@
+@c Hello emacs, this is -*- texinfo -*-
+@c $Id$
+@c André Rabello <Andre.Rabello@ufrj.br>
+
+@node Instalação, Considerações, Implementação, Top
+@chapter Instalação e Utilização da Biblioteca
+
+Este capítulo lida com os procedimentos de instalação e utilização da
+biblioteca @code{arith} de precisão arbitrária. 
+
+@menu
+* Instalando::                  Como instalar a biblioteca @code{arith}
+* Exemplos::                    Aplicações de análise
+@end menu
+
+@node Instalando, Exemplos, Instalação, Instalação
+@section Instalando a biblioteca
+
+Para instalar a biblioteca de codificação aritmética com precisão
+arbitrária, descomprima o arquivo da distribuição:
+
+@example
+$ zcat arith-X.XX.tar.gz | tar xvf -
+@end example
+
+Isto irá criar um novo diretório abaixo do diretório atual onde você se
+encontra, chamado @file{arith}. Este diretório contém todos os arquivos
+da biblioteca. Para poder utilizá-la, no entanto, você terá que compilar
+o código, gerando a biblioteca em si (@code{libarith.a}) e a
+documentação nos formatos @code{info}, @code{postscript} e
+@code{HTML}. Certifique-se que seu sistema possui a biblioteca de
+precisão arbitrária da GNU (@inforef{top, ,gmp}), numa versão >=
+3.0. Faça:
+
+@example
+$ cd arith
+$ make all
+@end example
+
+Isto deve ser suficiente para criar a biblioteca e a documentação
+necessária. A biblioteca foi programa usando-se ANSI C e, portanto, deve
+ser bastante portátil, compilando em diferentes sistemas operacionais,
+ainda que somente tenha sido testada sob GNU/Linux.
+
+Para efetivamente usar a biblioteca, crie um programa que inclua um ou
+mais dos arquivos-cabeçalho da biblioteca, compilando-o em seguida. A
+compilação deverá atentar à localização dos arquivos cabeçalho. Uma boa
+conduta é incluir os arquivos-cabeçalho sem incluir o diretório onde
+estão contidos no seu código fonte e compilá-lo da seguinte forma:
+
+@example
+$ gcc -I<diretório dos arquivos cabeçalho> -c myprogram.c
+@end example
+
+Para criar o arquivo executável de seu programa, linkedite o arquivo
+gerado acima (i.e., @file{myprogram.o}), junto a biblioteca de
+codificação aritmética:
+
+@example
+$ gcc -L<diretório da biblioteca> myprogram.o -larith -o myprogram
+@end example
+
+@node Exemplos,  , Instalando, Instalação
+@section Programas-exemplo
+
+Ao fazer, no diretório-raíz da distribuição, @code{make test}, você
+automaticamente compilará 3 programas de teste, que são também úteis
+para que você aprenda como utilizar a biblioteca de codificação
+aritmética.
+
+@table @file
+@item test_encode
+Este programa-exemplo aceita dois parâmetros: um @file{arquivo-dicionário}
+e um @file{arquivo-mensagem}, gerando um novo arquivo chamado
+@file{coded.mesg}. O arquivo gerado representa a codificação aritmética
+dos símbolos descritos pelo @file{arquivo-dicionário} que se encontram
+em @file{arquivo-mensagem}. Você pode alterar ambos os arquivos que
+servem de entrada para o programa de teste, desde que coerentemente. O
+@file{arquivo-mensagem} é composto dos símbolos de uma mensagem,
+separados por um caracter de espaço (@code{\n}, @code{tabulação} ou
+espaço simples). O @file{arquivo-dicionário} é tal qual o aceito pela
+função @code{cdf_load()}, descrita anteriormente.
+
+O programa imprimirá um conjunto de mensagens informativas antes da
+codificação propriamente dita e irá mensurar o tempo que demora para
+codificar todos os símbolos no @file{arquivo-mensagem} e a média
+aritmética para cada símbolo, em segundos.
+
+@item test_decode
+Este programa é similar ao anterior, exceto que sua entrada é o arquivo
+@file{coded.mesg}. A partir deste, o programa gerará o arquivo
+@file{decoded.mesg}, que contém a mensagem decodificada, com um símbolo
+por linha. O tempo total de execução da codificação e a média aritmética
+para cada símbolo também são apresentados. Você poderá comparar os
+arquivos @file{arquivo-mensagem} e @file{decoded.mesg} usando
+@code{diff} (@inforef{top, ,diff}) para ter certeza que o resultado da
+decodificação é igual ao arquivo original.
+
+@item test_cdf
+Este programa testa algumas funções disponíveis para o tipo
+@code{cdf_t}. Entre elas, a atualização de símbolos, re-organização do
+dicionário e funções de acesso a dados. Altere o código deste programa
+para adaptá-lo a um teste específico.
+@end table
+
+Junto à biblioteca, está incluso um diretório de exemplos
+(@file{example/}). Este diretório contém a descrição de alguns
+dicionários que podem ser utilizados para testes, assim como um script
+para @code{MatLab} que gera seqüências pseudo-aleatórias a partir das
+contagens de um arquivo dicionário. Use-o para gerar mensagens de teste.
+
+

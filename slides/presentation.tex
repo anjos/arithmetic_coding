@@ -1,0 +1,224 @@
+\typeout{Apresentacao de Compressao de Imagens, usando Foiltex.}
+\typeout{ Andre Rabello dos Anjos <Andre.Rabello@ufrj.br>}
+\typeout{--}
+
+\documentclass[20pt,headrule,footrule,dvips,landscape]{foils}
+
+%% -----------------------------------------
+%% Lista de Pacotes que você deverá precisar
+%% -----------------------------------------
+\usepackage[english,portuges]{babel} % Para hifenação automática do português.
+\usepackage[latin1]{inputenc} % Para tradução automática de acentos p/ LaTeX.
+\usepackage[final]{graphicx} % Para incluir figuras EPS.
+\graphicspath{{figures/}}
+\usepackage{color} % Para escrever algumas coisas coloridas.
+%\usepackage{html} % Para usar os comandos pre-definidos por latex2html
+\usepackage{multirow} % Para ter múltiplas linhas por coluna
+\usepackage{hhline} % Para linhas mais interessantes em artigos
+\usepackage{array} % para tabelas mais legais
+\usepackage{tabularx} % para tabelas mais legais
+\usepackage{amssymb} % Para os símbolos matemáticos. Coloque antes de amsmath
+\usepackage{amsmath} % Para as fórmulas e ambientes.
+\usepackage{alltt} % Para entrada verbatim com comandos LaTeX
+%\usepackage{draftcopy} % Para imprimir DRAFT na diagonal em cada página do .ps
+\usepackage{fancybox} % Para caixas decorativas
+
+% Defines the title page
+\title{\texttt{Arith 1.0}, Biblioteca de Codificação Aritmética com
+Precisão Arbitrária}
+\author{André Rabello dos Anjos}
+
+\newcommand{\hoje}{2 de outubro de 2001}
+\date{\hoje}
+
+% The colors I will use
+\definecolor{azul}{rgb}{0.2,0.2,0.8}
+\definecolor{verde}{rgb}{0,0.4,0}
+
+% The environments
+\newcommand{\eng}[1]{\foreignlanguage{english}{\emph{#1}}}
+\newcommand{\fr}[1]{\foreignlanguage{french}{\emph{#1}}}
+
+%% Alguns atalhos
+\newcommand{\eiro}{$^{\underline{o}}$} % Desenha o 'o.' do 1o.
+\newcommand{\eira}{$^{\underline{a}}$} % Desenha o 'a.' de 1a.
+\newcommand{\expo}[2]{$#1^{#2}\/$} % exponencia o 1o. arg com o 2o.
+\newcommand{\raw}[1]{{\tt #1}} % Vai para modo truetype (raw text)
+
+%% Alguns comandos
+\newcommand{\transp}[1]{\foilhead[-1.8cm]{\color{verde}{\shadowbox{#1}}}}
+\newcommand{\rottransp}[1]{\rotatefoilhead[-1.8cm]{\color{verde}{\shadowbox{#1}}}}
+
+% Defines what is going to be around the slide
+\MyLogo{\includegraphics[bb=154 460 429 549]{logolps}}
+\Restriction{}
+\leftheader{COPPE/EE/UFRJ -- LPS}
+\rightheader{\quad\textsf{\hoje}}
+
+\begin{document}
+
+\maketitle
+
+%%%%%%%%%%%
+%% Slide 01
+%%%%%%%%%%%
+\transp{Conteúdo}
+\MyLogo{André Rabello dos Anjos \color{azul}{\texttt{$<$Andre.Rabello@ufrj.br$>$}}}
+
+\begin{enumerate}
+\item Soluções da Codificação Aritmética
+\item Pseudo-código (codificação e decodificação)
+\item Descrição simplificada do dicionário
+\item Descrição simplificada dos Limites e Fifo
+\item Programas de teste: codificação
+\item Exemplos
+\item Conclusões Finais
+\end{enumerate}
+
+%%%%%%%%%%%
+%% Slide 02
+%%%%%%%%%%%
+\rottransp{Codificador Aritmético: \eng{Overview}}
+\begin{enumerate}
+\item A geração de códigos acontece naturalmente a partir do
+agrupamento de símbolos;
+\item Não é necessário concatenar os símbolos, gerando novos
+dicionários, para gerar códigos mais eficientes no ponto de vista da
+entropia;
+\item A atualização das probabilidades de cada símbolo não implica na
+re-estruturação de todos os códigos;
+\item É possível se aproximar tanto quanto necessário da entropia sem
+aumentar a complexidade de codificação;
+\item Há implementação trivial usando inteiros.
+\end{enumerate}
+
+\includegraphics[ext=.eps,bb=0 0 474 101,scale=0.9]{../doc/figures/coder}
+
+%%%%%%%%%%%
+%% Slide 03
+%%%%%%%%%%%
+\transp{Codificação Aritmética}
+\begin{alltt}
+\small
+void codificador(dicionário, código, limites, símbolo) {
+  limites_atuais = ache_limites(símbolo);
+  ajusta_limites(limites, limites_atuais);
+  while ( msb_dos_limites_é_igual || condição_E3_é_mantida ) {
+    if ( msb_dos_limites_é_igual ) {
+      bit=transmita_msb(limites);
+      aplique_escalemento(limites,bit); /* E1 ou E2 */
+      while ( há_condição_E3_em_espera )
+        envie_bit_complementar(); }
+    else {
+      aplique_escalamento_E3(limites);
+      ++há_condição_E3_em_espera;
+    }}
+  if ( símbolo == caracter_terminador ) termine_mensagem();
+}
+\end{alltt}
+
+%%%%%%%%%%%
+%% Slide 04
+%%%%%%%%%%%
+\transp{Decodificador Aritmético}
+\small
+\begin{alltt}
+void decodificador(dicionário, código, limites, símbolo) {
+  if primeira_vez_que_é_executado marca = leia_N_bits_da_fifo(código);
+  (símbolo,limites_atuais) = acha_símbolo(dicionário,limites,marca);
+  ajusta_limites(limites, limites_atuais);
+  while ( msb_dos_limites_é_igual || condição_E3_é_mantida ) {
+    if ( msb_dos_limites_é_igual ) {
+      remove_msb(limites);
+      desloca_outro_bit(marca,código);
+      if ( há_condição_E3_em_espera )
+        aplique_escalamento_E3(limites);
+        aplique_escalamento_E3(marca);
+    }
+  }
+  if ( símbolo == caracter_terminador ) reinicia_estado();
+}
+\end{alltt}
+
+%%%%%%%%%%%
+%% Slide 05
+%%%%%%%%%%%
+\transp{O tipo \texttt{Dicionário}}
+Este tipo deve conter funções para:
+\begin{enumerate}
+\item Inicialização e Destruição;
+\item Atualização das contagens;
+\item Consulta de símbolos;
+\item Depuração;
+\end{enumerate}
+
+Outros tipos:
+\begin{enumerate}
+\item Limites
+\begin{enumerate}
+\item Inicialização e Destruição;
+\item Ajuste;
+\item Teste (condições E1, E2 ou E3);
+\item Transmissão de bits;
+\end{enumerate}
+\item FIFO - Inicialização, Destruição, Leitura e Escrita de dados
+\end{enumerate}
+
+\transp{Programas de Teste: Codificação}
+\small
+\begin{alltt}
+int main (int argc, char** argv) {
+  \dots
+  cdf_t* dict;   /* o dicionario com simbolos */
+  bound_t* limit; /* limites globais */
+  fifo_t* coded; /* a mensagem codificada */
+  FILE* msg; /* o arquivo com a mensagem */
+  \dots
+    /* carrega dicionario */
+  dict = cdf_load(argv[1]);
+  \dots
+  /* inicializa limites */
+  limit = init_bound();
+  cdf_min_ulimit(dict,limit); /* 0 e 111111... */
+  \dots
+  coded = init_fifo();
+  start = clock();
+  /* ---------------------
+     CODFICACAO: INICIO
+     --------------------- */
+  for (i=0; i<lsize; ++i)
+    arith_encode(dict, coded, limit, &symbol[i]);
+  /* termina mensagem */
+  arith_encode(dict, coded, limit, 
+    &((dict->terminator)->c));
+  /* ---------------------
+     CODFICACAO: FIM
+     --------------------- */
+  end = clock();
+  cpu_time_used = ((double) (end - start)) / 
+    CLOCKS_PER_SEC;
+  \dots
+}
+\end{alltt}
+
+\transp{Considerações Finais}
+\begin{enumerate}
+\item Complexidade oculta: ler código-fonte!
+\item Código escrito em ANSI C para portabilidade
+\item Documentado
+\item Tempo com otimização para um AMD-K6III@450MHz:
+\begin{enumerate}
+\item codificação: 190 $\mu$s;
+\item decodificação: 27 $\mu$s;
+\end{enumerate}
+\item Diferenças se devem a complexidade da codificação:
+\begin{enumerate}
+\item Manipulação constante de 2 número de precisão arbitrária;
+\item Escrita na fila (alocação automática de memória).
+\end{enumerate}
+\end{enumerate}
+
+\end{document}
+
+
+

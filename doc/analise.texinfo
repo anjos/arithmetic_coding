@@ -1,0 +1,281 @@
+@c Hello emacs, this is -*- texinfo -*-
+@c $Id$
+@c André Rabello <Andre.Rabello@ufrj.br>
+
+@node Análise, Implementação, Introdução, Top
+@chapter Análise Computacional
+
+@ifnottex
+
+Para implementar um sistema de codificação e decodificação aritmética,
+se faz necessária uma análise deste processo. Este capítulo desenvolve
+tal análise. Para maiores detalhes, consulte @cite{Introduction to Data
+Compression, Khalid Sayood}.
+
+@end ifnottex
+
+O problema da codificação aritmética pode ser dividido na definição de 3
+tipos que se interoperam para realizar a codificação:
+
+@table @code
+@item dicionário
+Este tipo contém o alfabeto de símbolos que será utilizado durante a
+codificação e a decodificação. O tipo @code{dicionário} também inclui
+uma contagem cumulativa dos símbolos de um alfabeto;
+
+@item limite
+Este tipo contém uma descrição dos limites usados durante a
+codificação. Ele deve incluir varíaveis para o limite inferior e o
+superior;
+
+@item fila
+Uma fila (@strong{First-In First-Out, FIFO}) também é necessária para a
+inserção e leitura dos bits já codificados. Operações básicas devem ser
+definidas para este tipo, como a inserção e remoção de bits entre outras.
+@end table
+
+@menu
+* Precisão Arbitrária::         Como usar precisão arbitrária
+* Codificador::                 Descrição do processo de codificação
+* Decodificador::               Descrição do processo de decodificação
+* Dicionário::                  Guardando símbolos de forma eficiente
+* Limites::                     O estado do codificador
+* Fifo::                        Onde fica o código
+@end menu
+
+@node Precisão Arbitrária, Codificador, Análise, Análise
+@section Problemas relacionados à Precisão Arbitrária
+
+Para que a biblioteca de codificação tenha precisão arbitrária, os tipos
+descritos anteriormente não devem restringir a operação do programa no
+tangente ao número de bits necessários para representar as variáveis
+criadas durante a codificação. As rotinas aqui descritas utilizam os
+recursos da Biblioteca GNU de Precisão Múltipla (@inforef{top, ,gmp})
+para implementar o sistema de codificação, eliminando as restrições
+operacionais inerentes a implementações mais triviais, usando tipos
+pré-definidos nas linguagem de programação convencionais.
+
+A biblioteca GMP pode representar inteiros ou reais com centenas,
+milhares ou até milhões de bits. Ela é projetada levando-se em conta o
+tamanho dos operandos envolvidos nas operações, provendo @samp{o mais
+rápido método} de execução para cada função. Há versões compiladas desta
+biblioteca para vários processadores, o que a torna bastante portátil.
+
+Dentre os tipos mencionados, todos possuem uma ou mais variáveis com
+precisão arbitrária. Foi escolhido, por motivos de desempenho, que o
+sistema fosse projetado usando inteiros. Portanto, todas as variáveis de
+precisão arbitrária encontradas no código são inteiras. Há cerca de 50
+funções diferentes fornecidas pela GMP para a manipulação de variáveis
+deste tipo.
+
+@node Codificador, Decodificador, Precisão Arbitrária, Análise
+@section Codificação Aritmética
+
+O codificador aritmético pode ser melhor descrito pela seção de
+pseudo-código abaixo:
+
+@example
+void codificador(dicionário, código, limites, símbolo) @{
+  limites_atuais = ache_limites(símbolo);
+  ajusta_limites(limites, limites_atuais);
+  while ( msb_dos_limites_é_igual || condição_E3_é_mantida ) @{
+    if ( msb_dos_limites_é_igual ) @{
+      bit=transmita_msb(limites);
+      aplique_escalemento(limites,bit); /* E1 ou E2 */
+      while ( há_condição_E3_em_espera )
+        envie_bit_complementar();
+    @}
+    else @{
+      aplique_escalamento_E3(limites);
+      ++há_condição_E3_em_espera;
+    @}
+  @}
+  if ( símbolo == caracter_terminador ) 
+    termine_mensagem();
+@}
+@end example
+
+Na codificação aritmética, a função principal de codificação não sabe,
+previamente, o número de símbolos que irá codificar. Desta forma, para
+que o sistema seja minimamente sobrecarregado, a cada chamada do
+codificador, envia-se os quatro elementos que definem o seu estado
+atual: o dicionário contendo os símbolos e suas contagens, uma fila onde
+é colocado os bits já codificados, os limites atuais (superior e
+inferior) e o símbolo a ser codificado. O codificador então poderá
+calcular os novos limites para o símbolo atual e ajustar os limites
+anteriores.
+
+A segunda parte do codificador depende da necessidade de transmissão de
+bits, ou seja, caso o MSB (bit mais significativo) dos limites seja
+igual ou a condição de mapeamento E3@footnote{A condição de mapeamento
+E3 ocorre quando o limite inferior está no intervalo [0,25;0,5) e o
+limite superior esteja no intervalo [0,5;0,75).} seja necessária. Nestes
+casos, o bit MSB dos limites é transmitido se forem iguais ou um
+escalamento E3 é aplicado. Em ambos os casos há necessidade de re-ajuste
+dos limites, já que quando os MSB dos limites coincidem, há uma brecha
+para um mapeamento E1@footnote{E1 ocorre quando ambos os limites são
+inferiores a 0,5.} ou E2@footnote{E2 ocorre quando ambos os limites são
+superiores a 0,5.} (rescalonagem de limites).
+
+Quando se aplica um mapeamento E3, isto é anotado na variável
+@code{há_condição_E3_em_espera}, e os bits necessários (complementares)
+são enviados quando transmite-se um MSB (na condição de mapeamentos E1 e
+E2, como já explicitado).
+
+Quando elaborado desta forma, o processo de codificação é independente
+do dicionário de símbolos e não necessita do prévio conhecimento deste
+para aplicar a estratégia de processamento. O dicionário poderá ser
+re-configurando em tempo de execução para refletir mudanças
+probabilísticas, sem que o sistema se perca no processamento.
+  
+@node Decodificador, Dicionário, Codificador, Análise
+@section Decodificação Aritmética
+
+A decodificação aritmética ocorre de forma bastante similar à
+codificação, sendo, portanto, bastante trivial sua descrição baseando-se
+no pseudo-código anterior:
+
+@example
+void codificador(dicionário, código, limites, símbolo) @{
+  se_primeira_vez_que_é_executado @{
+    marca = leia_N_bits_da_fifo(código);
+  @}
+  (símbolo,limites_atuais) = acha_símbolo(dicionário,limites,marca);
+  ajusta_limites(limites, limites_atuais);
+  while ( msb_dos_limites_é_igual || condição_E3_é_mantida ) @{
+    if ( msb_dos_limites_é_igual ) @{
+      remove_msb(limites);
+      desloca_outro_bit(marca,código);
+      if ( há_condição_E3_em_espera )
+        aplique_escalamento_E3(limites);
+        aplique_escalamento_E3(marca);
+    @}
+  @}
+  if ( símbolo == caracter_terminador ) reinicia_estado();
+@}
+@end example
+
+Basicamente, o decodificador deverá ler o número de bits de código
+necessário para iniciar a codificação, se for a primeira vez que é
+executado. O número de bits depende da contagem total do dicionário, e
+este valor não pode variar durante a codificação de uma mensagem. Para
+isto, o tipo dicionário tem que contar com um sistema de atualização
+inteligente de suas contagens.
+
+Após ler o conjunto de @code{N} bits necessários, o decodificador deverá
+encontrar o símbolo tal que a contagem cumulativa é prontamente menor
+que o inteiro (@code{marca}) lido. Esta função é executada em
+@code{acha_símbolo()}. Depois de definir o símbolo do inteiro lido, o
+codificador deverá proceder (é claro que de forma simplificada) como o
+codificador, realizando a eliminação do MSB e deslocando outro bit
+codificado para dentro da variável @code{marca}. As condições de
+mapeamento E1, E2 ou E3 são respeitadas de forma equivalente à
+codificação.
+
+Por lidar com um número menor de variáveis (de precisão arbitrária),
+espera-se que o sistema de decodificação consiga ser mais rápido que o
+de codificação.
+
+@node Dicionário, Limites, Decodificador, Análise
+@section O Dicionário de Símbolos
+
+Para que possa ser utilizado pelo (de)codificador, as seguintes
+funcionalidades devem estar presentes no tipo @code{dicionário}:
+
+@table @code
+@item inicialização
+O tipo @code{dicionário} necessita de uma função de inicialização que
+possa, eventualmente, ler do arquivo a configuração (contagem) dos
+símbolos válidos para o sistema.
+
+Enquanto lê os símbolos válidos, é necessário que algum tipo de
+ordenação dos símbolos que compõe o @code{dicionário} seja feita. Esta
+ordenação facilitará a busca de símbolos durante a codificação,
+agilizando este processo. A forma mais trivial de organização dos
+símbolos é colocar os mais prováveis no início, de tal forma que para
+encontrar um dado símbolo, o sistema tenha que realizar,
+estocasticamente, o menor número de comparações o possível.
+
+Embora o número de símbolos existentes em um dicionário possa ser
+bastante grande, os tipos trivias nas linguagens de programação comuns
+podem dar conta desta variedade. No entanto, as contagens dos símbolos
+precisam ter precisão arbitrária, já que formam a base do processo de
+codificação;
+
+@item atualização
+É necessário um conjunto de funções que torne possível a atualização das
+contagens de cada símbolo no dicionário. Estas funções deverão estar
+atentas a mudanças muito radicais nas contagens cumulativas para cada
+símbolo, já que além de provocar uma re-ordenação do dicionário, poderão
+afetar a lógica de codificação;
+
+@item consulta
+As funções de consulta do dicionário são de longe as mais utilizadas
+durante a codificação. É necessário que o mínimo de cálculo seja
+efetuado a cada consulta. Algumas opções de organização dos símbolos e
+consulta de dados podem ser dadas ao usuário final, se assim for
+desejável;
+
+Para que se possa executar a consulta de símbolos de forma estruturada e
+elegante, o tipo @code{dicionário} deve conter uma tabela de símbolos
+organizada como uma lista encadeada. Cada símbolo na lista indica o
+próximo (menos provável), de tal forma que a procura e re-organização
+dos símbolos seja eficiente;
+
+@item depuração
+Algumas funções de depuração podem ser úteis na avaliação do correto
+funcionamento deste tipo durante a (de)codificação.
+@end table
+
+@node Limites, Fifo, Dicionário, Análise
+@section Os Limites na Codificação
+
+Durante o processo de (de)codificação, uma variável do tipo
+@code{limite} é responsável pelo armazenamento do estado atual do
+decodificador. Esta variável é na verdade uma estrutura formada por duas
+outras variáveis que definem as bordas (0 e 1) para a codificação. Estas
+bordas, ou limites, são esticados e esmagados dentro do processamento
+dos símbolos, garantindo a rescalonagem dos limites operacionais do
+sistema.
+
+Um conjunto básico de funcionalidades é necessário para o tipo:
+
+@table @code
+@item inicialização
+Funções para inicializar e destruir variáveis do tipo
+@code{limite}. Variáveis deste tipo são compostas de dois inteiros de
+precisão arbitrária apenas, sendo esta uma atividade trivial;
+
+@item teste
+Estas funções testam algumas características de um @code{limite}, como
+por exemplo, se os dois MSB são iguais ou se a condição E3 está
+atualmente satisfeita;
+
+@item ajuste
+Estas funções permitem o rescalonamento dos limites atuais para o
+sistema, dados os limites para o símbolo atual, que está sendo
+codificado; 
+
+@item transmissão
+Estas funções auxiliam no processo da transmissão incremental dos
+bits e na aplicação dos mapeamentos E1, E2 ou E3.
+
+@end table
+
+@node Fifo,  , Limites, Análise
+@section Filas @code{FIFO}
+
+As filas conterão os bits codificados. Funções para inicialização,
+inserção e remoção de bits são necessárias neste tipo. A implementação
+do tipo poderá ser feita a critério do programador. A solução adotada
+nesta biblioteca foi utilizar um inteiro de precisão arbitrária para
+implementar esta fila. A alocação de espaço é automática para este tipo
+e a manipulação de bits, bastante eficiente.
+
+
+
+
+
+
+
+
